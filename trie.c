@@ -8,7 +8,7 @@ int trie_add(trie_t *t, char *word) {
     int c, i = 0;
 
     while ((c = word[i++]) != '\0') {
-        assert(c >= 0 && c <= 127);
+        assert(c >= 0 && c < TRIE_SIZE);
         if (t->chars[c] == NULL) {
             t->chars[c] = trie_init();
         }
