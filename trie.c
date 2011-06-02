@@ -50,7 +50,7 @@ int trie_load(trie_t *t, char *file) {
             }
         } else {
             word_len++;
-            assert(c >= 0 && c <= 127);
+            assert(c >= 0 && c < TRIE_SIZE);
             if (t->chars[c] == NULL) {
                 t->chars[c] = trie_init();
             }
