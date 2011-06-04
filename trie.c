@@ -17,9 +17,7 @@ void trie_add(trie_t *t, char *word) {
         }
         t = t->chars[c];
     }
-    if (c == 0) {
-        t->chars[TRIE_SENTINEL] = trie_init();
-    }
+    t->chars[TRIE_SENTINEL] = trie_init();
 }
 
 int trie_exists(trie_t *t, char *word) {

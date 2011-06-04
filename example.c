@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
     //Speed test
     char *src = "the quick brown fox jumped over the lazy dog";
-    char *dest = (char *) malloc(strlen(sentence) / sizeof(char));
+    char *dest = (char *) malloc(strlen(sentence) + 1);
     clock_t start = clock();
     for (int i = 0; i < 1000000; i++) {
         trie_strip(stopwords, src, dest);
