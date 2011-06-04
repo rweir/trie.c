@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     trie_load(stopwords, "stopwords.txt");
 
     //Remove stopwords from a sentence in a single iteration
-    char *sentence = "the quick brown fox jumped over the lazy dog";
+    char sentence[] = "the quick brown fox jumped over the lazy dog";
     char *result = trie_strip(stopwords, sentence);
 
     printf("Stripping stopwords from '%s'\n", sentence);

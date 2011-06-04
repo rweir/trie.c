@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <assert.h>
 
@@ -67,12 +68,11 @@ char *trie_strip(trie_t *t, char *sentence) {
     if (sentence == NULL) {
         return NULL;;
     }
-    char *result = (char *) malloc(sizeof(sentence) / sizeof(char));
     int c, i = 0, j = 0, last_break = 0, in_trie = 1;
     trie_t *root = t;
 
     while (1) {
-        c = result[j++] = sentence[i++];
+        c = sentence[j++] = sentence[i++];
         if (c == ' ' || c == '\n' || c == '\r' || c == '\0') {
             t = root;
             if (in_trie) {
@@ -83,7 +83,7 @@ char *trie_strip(trie_t *t, char *sentence) {
             }
             if (c == '\0') {
                 if (j < i) {
-                    result[j] = '\0';
+                    sentence[j] = '\0';
                 }
                 break;
             }
@@ -99,7 +99,7 @@ char *trie_strip(trie_t *t, char *sentence) {
             in_trie = 1;
         }
     }
-    return result;
+    return sentence;
 }
 
 void trie_free(trie_t *t) {
