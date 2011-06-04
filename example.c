@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 #include "trie.h"
@@ -22,17 +23,18 @@ int main(int argc, char **argv) {
     trie_t *stopwords = trie_init();
     trie_load(stopwords, "stopwords.txt");
 
-    //Remove stopwords from a sentence in a single iteration
+    //Remove stopwords from a sentence, in place, in a single iteration
     char sentence[] = "the quick brown fox jumped over the lazy dog";
-    char *result = trie_strip(stopwords, sentence);
-
     printf("Stripping stopwords from '%s'\n", sentence);
-    printf("Result '%s'\n\n", result);
+    trie_strip(stopwords, sentence, NULL);
+    printf("Result '%s'\n\n", sentence);
 
     //Speed test
+    char *src = "the quick brown fox jumped over the lazy dog";
+    char *dest = (char *) malloc(strlen(sentence) / sizeof(char));
     clock_t start = clock();
     for (int i = 0; i < 1000000; i++) {
-        result = trie_strip(stopwords, sentence);
+        trie_strip(stopwords, src, dest);
     }
     clock_t elapsed = (clock() - start) / (CLOCKS_PER_SEC / (double) 1000.0);
     printf("Completed 1 million iterations of the stop word example in %.0f ms\n", (double) elapsed);
@@ -55,6 +57,6 @@ int main(int argc, char **argv) {
 Stripping stopwords from 'the quick brown fox jumped over the lazy dog'
 Result 'quick brown fox jumped lazy dog'
 
-Completed 1 million iterations of the stop word example in 668 ms
+Completed 1 million iterations of the stop word example in 180 ms
 
 */

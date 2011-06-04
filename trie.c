@@ -5,46 +5,47 @@
 
 #include "trie.h"
 
-int trie_add(trie_t *t, char *word) {
-    int c, i = 0;
+inline trie_t *trie_init(void) {
+    return (trie_t *) malloc(sizeof(trie_t));
+}
 
-    while ((c = word[i++]) != '\0') {
+void trie_add(trie_t *t, char *word) {
+    int c;
+    while ((c = *word++)) {
         assert(c >= 0 && c < TRIE_SIZE);
         if (t->chars[c] == NULL) {
             t->chars[c] = trie_init();
         }
         t = t->chars[c];
     }
-    if (i > 0) {
-        t->chars[0] = trie_init();
+    if (c == 0) {
+        t->chars[TRIE_SENTINEL] = trie_init();
     }
-    return i;
 }
 
 int trie_exists(trie_t *t, char *word) {
-    int c, i = 0;
-
-    while ((c = word[i++]) != '\0') {
+    int c;
+    while ((c = *word++)) {
         if (t->chars[c] == NULL) {
             return 0;
         }
         t = t->chars[c];
     }
-    return t->chars[0] != NULL ? 1 : 0;
+    return t->chars[TRIE_SENTINEL] != NULL ? 1 : 0;
 }
 
 int trie_load(trie_t *t, char *file) {
     FILE *stream = fopen(file, "r");
-    trie_t *root = t;
-    int c, words = 0, word_len = 0;
-
     if (stream == NULL) {
         return -1;
     }
+
+    trie_t *root = t;
+    int c, words = 0, word_len = 0;
     while ((c = getc(stream)) != EOF) {
         if (c == '\n' || c == '\r') {
             if (word_len > 0) {
-                t->chars[0] = trie_init();
+                t->chars[TRIE_SENTINEL] = trie_init();
                 words++;
                 word_len = 0;
                 t = root;
@@ -59,33 +60,29 @@ int trie_load(trie_t *t, char *file) {
         }
     }
     if (t != root && word_len > 0) {
-        t->chars[0] = trie_init();
+        t->chars[TRIE_SENTINEL] = trie_init();
     }
     return words;
 }
 
-char *trie_strip(trie_t *t, char *sentence) {
-    if (sentence == NULL) {
-        return NULL;;
+void trie_strip(trie_t *t, char *src, char *dest) {
+    if (src == NULL) {
+        return;
     }
-    int c, i = 0, j = 0, last_break = 0, in_trie = 1;
+    if (dest == NULL) {
+        dest = src;
+    }
+    int c, i = 0, last_break = 0, in_trie = 1;
     trie_t *root = t;
 
-    while (1) {
-        c = sentence[j++] = sentence[i++];
-        if (c == ' ' || c == '\n' || c == '\r' || c == '\0') {
+    while ((c = dest[i++] = *src++)) {
+        if (c == ' ' || c == '\n' || c == '\t' || c == '\r') {
             t = root;
             if (in_trie) {
-                j = last_break;
+                i = last_break;
             } else {
                 in_trie = 1;
-                last_break = j;
-            }
-            if (c == '\0') {
-                if (j < i) {
-                    sentence[j] = '\0';
-                }
-                break;
+                last_break = i;
             }
             continue;
         }
@@ -99,7 +96,6 @@ char *trie_strip(trie_t *t, char *sentence) {
             in_trie = 1;
         }
     }
-    return sentence;
 }
 
 void trie_free(trie_t *t) {
